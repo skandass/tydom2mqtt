@@ -47,6 +47,7 @@ class Configuration:
     thermostat_cool_mode_temp_default = int
     thermostat_heat_mode_temp_default = int
     tydom_polling_interval = int
+    device_templates = dict
 
     def __init__(self):
         self.log_level = os.getenv(LOG_LEVEL, "INFO").upper()
@@ -71,6 +72,7 @@ class Configuration:
         self.thermostat_heat_mode_temp_default = os.getenv(
             THERMOSTAT_HEAT_MODE_TEMP_DEFAULT, 16
         )
+        self.device_templates = {}
 
     @staticmethod
     def load():
@@ -104,8 +106,8 @@ class Configuration:
                         self.tydom_password = data[TYDOM_PASSWORD]
 
                     if (
-                        TYDOM_POLLING_INTERVAL in data
-                        and data[TYDOM_POLLING_INTERVAL] != ""
+                            TYDOM_POLLING_INTERVAL in data
+                            and data[TYDOM_POLLING_INTERVAL] != ""
                     ):
                         self.tydom_polling_interval = int(data[TYDOM_POLLING_INTERVAL])
 
@@ -119,28 +121,28 @@ class Configuration:
                         self.tydom_alarm_pin = str(data[TYDOM_ALARM_PIN])
 
                     if (
-                        TYDOM_ALARM_HOME_ZONE in data
-                        and data[TYDOM_ALARM_HOME_ZONE] != ""
+                            TYDOM_ALARM_HOME_ZONE in data
+                            and data[TYDOM_ALARM_HOME_ZONE] != ""
                     ):
                         self.tydom_alarm_home_zone = data[TYDOM_ALARM_HOME_ZONE]
 
                     if (
-                        TYDOM_ALARM_NIGHT_ZONE in data
-                        and data[TYDOM_ALARM_NIGHT_ZONE] != ""
+                            TYDOM_ALARM_NIGHT_ZONE in data
+                            and data[TYDOM_ALARM_NIGHT_ZONE] != ""
                     ):
                         self.tydom_alarm_night_zone = data[TYDOM_ALARM_NIGHT_ZONE]
 
                     if (
-                        THERMOSTAT_COOL_MODE_TEMP_DEFAULT in data
-                        and data[THERMOSTAT_COOL_MODE_TEMP_DEFAULT] != ""
+                            THERMOSTAT_COOL_MODE_TEMP_DEFAULT in data
+                            and data[THERMOSTAT_COOL_MODE_TEMP_DEFAULT] != ""
                     ):
                         self.thermostat_cool_mode_temp_default = data[
                             THERMOSTAT_COOL_MODE_TEMP_DEFAULT
                         ]
 
                     if (
-                        THERMOSTAT_HEAT_MODE_TEMP_DEFAULT in data
-                        and data[THERMOSTAT_HEAT_MODE_TEMP_DEFAULT] != ""
+                            THERMOSTAT_HEAT_MODE_TEMP_DEFAULT in data
+                            and data[THERMOSTAT_HEAT_MODE_TEMP_DEFAULT] != ""
                     ):
                         self.thermostat_heat_mode_temp_default = data[
                             THERMOSTAT_HEAT_MODE_TEMP_DEFAULT
@@ -161,6 +163,9 @@ class Configuration:
                     if MQTT_SSL in data and data[MQTT_SSL] != "":
                         self.mqtt_ssl = data[MQTT_SSL]
 
+                    if "device_templates" in data and isinstance(data["device_templates"], dict):
+                        logger.info("Loading custom device_templates")
+                        self.device_templates = data["device_templates"]
                 except Exception as e:
                     logger.error("Parsing error %s", e)
 
@@ -169,10 +174,10 @@ class Configuration:
 
     def override_configuration_with_deltadore(self):
         if (
-            self.deltadore_login is not None
-            and self.deltadore_login != ""
-            and self.deltadore_password is not None
-            and self.deltadore_password != ""
+                self.deltadore_login is not None
+                and self.deltadore_login != ""
+                and self.deltadore_password is not None
+                and self.deltadore_password != ""
         ):
             tydom_password = TydomClient.getTydomCredentials(
                 self.deltadore_login, self.deltadore_password, self.tydom_mac

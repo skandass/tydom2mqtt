@@ -441,6 +441,9 @@ class MessageHandler:
     @staticmethod
     async def parse_config_data(parsed):
         for i in parsed["endpoints"]:
+            unique_id = f"{i['id_endpoint']}_{i['id_device']}"
+            device_name[unique_id]     = i.get("name", "")
+            device_type[unique_id]     = i.get("last_usage", "unknown")
             device_unique_id = str(i["id_endpoint"]) + "_" + str(i["id_device"])
 
             if (
