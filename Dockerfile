@@ -1,15 +1,28 @@
-FROM python:3.11-alpine3.17
+FROM python:3.11-alpine3.24
 
 LABEL org.opencontainers.image.description="Deltadore Tydom to MQTT Bridge"
+LABEL org.opencontainers.image.source="https://github.com/skandass/tydom2mqtt"
+
+# Don't buffer stdout/stderr and don't write .pyc files
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # App base dir
 WORKDIR /app
 
-# Copy app
-COPY /app .
+# Install dependencies first to leverage Docker layer caching
+COPY app/requirements.txt ./requirements.txt
+RUN pip3 install --no-cache-dir --upgrade pip \
+    && pip3 install --no-cache-dir -r requirements.txt
 
-# Install dependencies
-RUN pip3 install -r requirements.txt
+# Copy the application code
+COPY app/ .
+
+# Run as a non-root user
+RUN adduser -D -H appuser
+USER appuser
 
 # Main command
 CMD [ "python", "-u", "main.py" ]
