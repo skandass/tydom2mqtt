@@ -20,9 +20,9 @@ RUN pip3 install --no-cache-dir --upgrade pip \
 # Copy the application code
 COPY app/ .
 
-# Run as a non-root user
-RUN adduser -D -H appuser
-USER appuser
+# NOTE: Home Assistant add-ons must run as root. The Supervisor mounts /data
+# and writes /data/options.json as root; a non-root USER causes a startup
+# crash: PermissionError [Errno 13] Permission denied: /data/options.json
 
 # Main command
 CMD [ "python", "-u", "main.py" ]
