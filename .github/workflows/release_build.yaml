@@ -54,7 +54,7 @@ jobs:
         with:
           push: ${{ github.event_name != 'pull_request' }}
           platforms: "linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/amd64"
-          tags: ghcr.io/${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: 🔖 Generate artifact attestation
