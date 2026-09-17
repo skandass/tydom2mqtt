@@ -1,4 +1,5 @@
-FROM python:3.11-alpine3.24
+FROM python:3.11-alpine3.24
+
 
 LABEL org.opencontainers.image.description="Deltadore Tydom to MQTT Bridge"
 LABEL org.opencontainers.image.source="https://github.com/skandass/tydom2mqtt"
@@ -23,6 +24,13 @@ COPY app/ .
 # NOTE: Home Assistant add-ons must run as root. The Supervisor mounts /data
 # and writes /data/options.json as root; a non-root USER causes a startup
 # crash: PermissionError [Errno 13] Permission denied: /data/options.json
+
+# Expose health check port
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python /app/healthcheck.py
 
 # Main command
 CMD [ "python", "-u", "main.py" ]
