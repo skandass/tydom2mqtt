@@ -24,16 +24,20 @@ jobs:
       - name: 📚 Git Checkout
         uses: actions/checkout@v4
 
+      # Version figée : l'action tire sinon la dernière version de ruff, dont
+      # les nouvelles règles font échouer la CI sur du code inchangé.
       - name: ✨ Ruff check formatting
         uses: astral-sh/ruff-action@v2
         with:
           src: "./app"
+          version: "0.15.20"
           args: "format --check"
 
       - name: ✨ Ruff lint
         uses: astral-sh/ruff-action@v2
         with:
           src: "./app"
+          version: "0.15.20"
           args: "check"
 
   test:
